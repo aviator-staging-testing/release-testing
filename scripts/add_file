@@ -1,0 +1,8 @@
+#!python
+
+import pathlib
+import datetime
+
+d = datetime.datetime.now()
+file_path = pathlib.Path(__file__).absolute().parent.parent / "files" / d.isoformat()
+file_path.write_text(f"Created at {d}")
