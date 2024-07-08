@@ -3,15 +3,15 @@ name: prod-deploy
 on:
   workflow_dispatch:
     inputs:
-      deployment_id:
+      aviator_deployment_id:
         description: "Database ID of deployment"
         required: false
         type: string
-      commit_sha:
+      aviator_release_cut_commit_hash:
         description: "Commit SHA to be built"
         required: false
         type: string
-      version:
+      aviator_release_candidate_version:
         description: "Version to deploy"
         required: true
         type: string
@@ -27,20 +27,20 @@ jobs:
       contents: "write"
       id-token: "write"
     steps:
-      - if: inputs.deployment_id != ''
+      - if: inputs.aviator_deployment_id != ''
         name: Sync workflow run ID via Aviator API
         uses: fjogeleit/http-request-action@v1
         with:
           url: '${{ vars.AVIATOR_API_HOST }}/api/v1/sync-deploy-github-action'
           method: 'POST'
           bearerToken: ${{ secrets.AVIATOR_API_TOKEN }}
-          data: '{"deployment_id": "${{ inputs.deployment_id }}", "workflow_run_id": "${{ github.run_id }}"}'
+          data: '{"deployment_id": "${{ inputs.aviator_deployment_id }}", "workflow_run_id": "${{ github.run_id }}"}'
 
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
           # if custom commit_sha is not defined, this should fall back to the head branch
-          ref: "${{ inputs.commit_sha }}"
+          ref: "${{ inputs.aviator_release_cut_commit_hash }}"
 
       - run: |
           git tag --force prod HEAD
